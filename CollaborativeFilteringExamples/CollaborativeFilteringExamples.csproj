@@ -34,7 +34,6 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="BooleanPreferences.cs" />
     <Compile Include="CollaborativeFiltering.cs" />
     <Compile Include="JaccardSimilarity.cs" />
     <Compile Include="ISimilarityScorer.cs" />

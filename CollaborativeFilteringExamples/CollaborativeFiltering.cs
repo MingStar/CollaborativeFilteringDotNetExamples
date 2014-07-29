@@ -6,12 +6,6 @@ namespace CollaborativeFilteringExamples
 {
 	public class CollaborativeFiltering
 	{
-		public CollaborativeFiltering ()
-		{
-		}
-
-		// Rewrite this crap in LINQ!!!
-
 		public IEnumerable<KeyValuePair<int, double>> recommend (
 									IEnumerable<UserProfile> profiles,
 									ISimilarityScorer similarity, 
