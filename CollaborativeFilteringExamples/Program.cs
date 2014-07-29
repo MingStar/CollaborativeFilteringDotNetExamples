@@ -12,14 +12,14 @@ namespace CollaborativeFilteringExamples
 			var engine = new CollaborativeFiltering();
 			foreach (var profile in profiles) {
 				var results = engine.recommend(profiles, simiarity, profile);
-				PrintResults(results);
+				PrintResults(profile.UserId, results);
 			}
 		}
 
-		private static void PrintResults(IEnumerable<KeyValuePair<int, double>> results) {
-			Console.Write ("[ ");
+		private static void PrintResults(int userId, IEnumerable<KeyValuePair<int, double>> results) {
+			Console.Write("user{0}: [ ", userId);
 			foreach (var result in results) {
-				Console.Write (String.Format ("({0}, {1}) ", result.Key, result.Value));
+				Console.Write (String.Format ("(item{0}, {1}) ", result.Key, result.Value));
 			}
 			Console.WriteLine ("]");
 		}
