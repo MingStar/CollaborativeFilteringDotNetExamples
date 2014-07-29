@@ -11,38 +11,47 @@ namespace CollaborativeFilteringExamples
 		}
 
 		// Rewrite this crap in LINQ!!!
+
 		public IEnumerable<KeyValuePair<int, double>> recommend (
-			IEnumerable<UserPreference> preferences,
-			Func<double> get_similarity, 
-			UserPreference currentUserPref) {
-			Dictionary<int, double> totals = new Dictionary<int, double> ();
-			foreach (UserPreference pref in preferences) {
-				int otherUserId = pref.UserId;
-				if (otherUserId == currentUserPref.UserId) {
-					continue; // skip the user
+									IEnumerable<UserProfile> profiles,
+									ISimilarityScorer similarity, 
+									UserProfile current) {
+
+			var totals = new Dictionary<int, double> ();
+
+			foreach (UserProfile other in profiles) {
+				if (other == current) {
+					continue; // skip the current user profile
 				}
-				double score = get_similarity ();
-				//only score items that the user has no preferences
-				IEnumerable<int> noPrefItems = pref.ItemIds.Except (currentUserPref.ItemIds);
-				foreach (int itemId in noPrefItems) {
-					totals [itemId] += score;
+
+				double score = similarity.Calculate(current, other);
+
+				//only score items NOT in current user's history
+				foreach (int itemId in 
+					     other.ItemHistory.Except(current.ItemHistory)) {
+					if (!totals.ContainsKey(itemId)) {
+						totals[itemId] = 0.0;
+					}
+					totals[itemId] += score;
 				}
 			}
-			return totals.OrderBy (pair => pair.Value);
+
+			return totals.OrderByDescending(pair => pair.Value);
 		}
 
 		public IEnumerable<KeyValuePair<int, double>> recommendUsingLinq (
-			IEnumerable<UserPreference> preferences,
-			ISimilarity similarity, 
-			UserPreference currentUserPref) {
+			IEnumerable<UserProfile> preferences,
+			ISimilarityScorer similarity, 
+			UserProfile currentUserPref) {
 			var scores = from pref in preferences
-			            where pref.UserId != currentUserPref.UserId
-						let score = similarity.Calculate(currentUserPref.ItemIds, pref.ItemIds)
-						from itemId in pref.ItemIds.Except(currentUserPref.ItemIds) 
-			            select new {
-							Score = score,
-							NoPrefItemId = itemId
-						};
+						 where pref != currentUserPref // skip current user
+						 let score = similarity.Calculate(currentUserPref, pref)
+						 //only score items that the user has no preferences
+						 from itemId in pref.ItemHistory.Except(currentUserPref.ItemHistory) 
+			             select new {
+							 Score = score,
+							 NoPrefItemId = itemId
+						 };
 			return (from item in scores
 				group item by item.NoPrefItemId into grp
 				select new KeyValuePair<int, double>(grp.Key, grp.Sum(i => i.Score)) )

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace CollaborativeFilteringExamples
 {
-	public interface ISimilarity
+	public interface ISimilarityScorer
 	{
-		double Calculate(ISet<int> itemIds, ISet<int> otherItemIds);
+		double Calculate(UserProfile current, UserProfile other);
 	}
 }
 

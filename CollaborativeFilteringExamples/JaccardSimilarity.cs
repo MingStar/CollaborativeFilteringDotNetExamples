@@ -4,22 +4,20 @@ using System.Collections.Generic;
 
 namespace CollaborativeFilteringExamples
 {
-	public class JaccardSimilarity : ISimilarity
-	{
-		public JaccardSimilarity ()
+	public class JaccardSimilarity : ISimilarityScorer
+	{		
+		public double Calculate(UserProfile current, UserProfile other)
 		{
-		}
+			int intersectionCount = 
+				current.ItemHistory.Intersect(other.ItemHistory).Count();
 
-		#region ISimilarity implementation
+			int unionCount = 
+				current.ItemHistory.Length
+				+ other.ItemHistory.Length
+				- intersectionCount;
 
-		public double Calculate (ISet<int> itemIds, ISet<int> otherItemIds)
-		{
-			int intersectionCount = itemIds.Intersect(otherItemIds).Count();
-			int unionCount = itemIds.Count + otherItemIds.Count - intersectionCount;
 			return intersectionCount / (double)unionCount;
-		}
-
-		#endregion
+		}			
 	}
 }
 

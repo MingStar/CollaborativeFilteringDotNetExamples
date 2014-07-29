@@ -7,24 +7,31 @@ namespace CollaborativeFilteringExamples
 	{
 		public static void Main (string[] args)
 		{
-			var preferences = new List<UserPreference> ();
-			preferences.Add (new UserPreference (1, new int[] { 1, 2, 3 }));
-			preferences.Add (new UserPreference (2, new int[] { 2, 3, 4 }));
-			preferences.Add (new UserPreference (3, new int[] { 1, 5 }));
-			var engine = new CollaborativeFiltering ();
-			foreach (var pref in preferences) {
-				var results = engine.recommendUsingLinq (preferences, new JaccardSimilarity (), 
-					pref);
-				PrintResults (results);
+			var profiles = GetAllUserProfiles(); 		
+			var simiarity = new JaccardSimilarity();
+			var engine = new CollaborativeFiltering();
+			foreach (var profile in profiles) {
+				var results = engine.recommend(profiles, simiarity, profile);
+				PrintResults(results);
 			}
 		}
 
 		private static void PrintResults(IEnumerable<KeyValuePair<int, double>> results) {
-			Console.Write ("[");
+			Console.Write ("[ ");
 			foreach (var result in results) {
-				Console.Write (String.Format ("({0},{1})", result.Key, result.Value));
+				Console.Write (String.Format ("({0}, {1}) ", result.Key, result.Value));
 			}
 			Console.WriteLine ("]");
+		}
+
+		private static IEnumerable<UserProfile> GetAllUserProfiles() {
+			var profiles = new List<UserProfile> ();
+
+			profiles.Add(new UserProfile(1, new int[] { 1, 2, 3 }));
+			profiles.Add(new UserProfile(2, new int[] { 2, 3, 4 }));
+			profiles.Add(new UserProfile(3, new int[] { 1, 5 }));
+
+			return profiles;
 		}
 	}
 }
